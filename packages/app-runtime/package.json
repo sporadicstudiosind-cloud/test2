@@ -1,0 +1,20 @@
+{
+  "name": "windows-clone-app-runtime",
+  "version": "0.1.0",
+  "description": "App execution runtime for Windows clone",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.0",
+    "vitest": "^1.1.0"
+  }
+}
