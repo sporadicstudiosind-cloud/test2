@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CSS custom properties for theming */
+:root {
+  --accent: #3b82f6;
+  --accent-hover: #3b82f6dd;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -12,23 +18,71 @@ html, body, #root {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Scrollbar styling */
+/* Dark theme scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: rgba(255,255,255,0.03);
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.22);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+/* Window frame */
+.window-frame {
+  background: #0f172a;
+}
+
+/* Desktop root — light/dark via data-theme */
+.desktop-root {
+  background: var(--desktop-bg, #0f172a);
+}
+
+/* Accent color utilities via CSS vars */
+.accent-bg {
+  background-color: var(--accent);
+}
+.accent-border {
+  border-color: var(--accent);
+}
+.accent-text {
+  color: var(--accent);
+}
+
+/* Smooth window animations */
+.window-frame {
+  animation: windowOpen 0.15s ease-out;
+}
+
+@keyframes windowOpen {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Notification slide-in */
+@keyframes slide-in-from-right-4 {
+  from { opacity: 0; transform: translateX(1rem); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-in {
+  animation: slide-in-from-right-4 0.2s ease-out;
+}
+.slide-in-from-right-4 { /* alias, handled by @keyframes above */ }
+
+/* line-clamp utility (if not in tailwind version) */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

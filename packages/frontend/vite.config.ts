@@ -6,24 +6,15 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-      },
-      '/auth': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-      },
-      '/socket.io': {
-        target: 'http://localhost:3000',
-        ws: true,
-      },
-    },
+    // No backend proxy — all data goes direct to GitHub API
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  // Allow GitHub API calls from dev server
+  define: {
+    'process.env': {},
   },
 });

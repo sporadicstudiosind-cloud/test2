@@ -1,21 +1,28 @@
 import { create } from 'zustand';
-import { Window } from '../types/index';
-import { v4 as uuidv4 } from 'uuid';
+import { AppWindow } from '../types';
+
+function uid(): string {
+  return crypto.randomUUID();
+}
+
+// Stagger new windows so they don't all stack on top of each other
+let spawnOffset = 0;
 
 interface WindowStore {
-  windows: Window[];
+  windows: AppWindow[];
   focusedWindowId: string | null;
   nextZIndex: number;
 
-  // Actions
-  createWindow: (title: string, appId?: string) => Window;
+  createWindow: (title: string, appId: string, appData?: Record<string, unknown>) => AppWindow;
   closeWindow: (id: string) => void;
   focusWindow: (id: string) => void;
   minimizeWindow: (id: string) => void;
   maximizeWindow: (id: string) => void;
+  restoreWindow: (id: string) => void;
   moveWindow: (id: string, x: number, y: number) => void;
   resizeWindow: (id: string, width: number, height: number) => void;
-  getWindowById: (id: string) => Window | undefined;
+  updateAppData: (id: string, data: Record<string, unknown>) => void;
+  getWindowById: (id: string) => AppWindow | undefined;
 }
 
 export const useWindowStore = create<WindowStore>((set, get) => ({
@@ -23,74 +30,89 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
   focusedWindowId: null,
   nextZIndex: 100,
 
-  createWindow: (title: string, appId?: string) => {
-    const newWindow: Window = {
-      id: uuidv4(),
+  createWindow: (title, appId, appData) => {
+    spawnOffset = (spawnOffset + 1) % 8;
+    const offset = spawnOffset * 30;
+    const newWindow: AppWindow = {
+      id: uid(),
       title,
       appId,
-      x: 50,
-      y: 50,
-      width: 800,
-      height: 600,
+      x: 60 + offset,
+      y: 40 + offset,
+      width: 900,
+      height: 620,
       zIndex: get().nextZIndex,
       isMinimized: false,
       isMaximized: false,
+      appData,
     };
-
     set((state) => ({
       windows: [...state.windows, newWindow],
       nextZIndex: state.nextZIndex + 1,
       focusedWindowId: newWindow.id,
     }));
-
     return newWindow;
   },
 
-  closeWindow: (id: string) => {
+  closeWindow: (id) => {
+    set((state) => {
+      const remaining = state.windows.filter((w) => w.id !== id);
+      const focused =
+        state.focusedWindowId === id
+          ? remaining[remaining.length - 1]?.id ?? null
+          : state.focusedWindowId;
+      return { windows: remaining, focusedWindowId: focused };
+    });
+  },
+
+  focusWindow: (id) => {
     set((state) => ({
-      windows: state.windows.filter((w) => w.id !== id),
+      windows: state.windows.map((w) => (w.id === id ? { ...w, zIndex: state.nextZIndex } : w)),
+      focusedWindowId: id,
+      nextZIndex: state.nextZIndex + 1,
+    }));
+  },
+
+  minimizeWindow: (id) => {
+    set((state) => ({
+      windows: state.windows.map((w) => (w.id === id ? { ...w, isMinimized: true } : w)),
       focusedWindowId: state.focusedWindowId === id ? null : state.focusedWindowId,
     }));
   },
 
-  focusWindow: (id: string) => {
-    set((state) => {
-      const window = state.windows.find((w) => w.id === id);
-      if (!window) return state;
-
-      return {
-        windows: state.windows.map((w) => (w.id === id ? { ...w, zIndex: state.nextZIndex } : w)),
-        focusedWindowId: id,
-        nextZIndex: state.nextZIndex + 1,
-      };
-    });
-  },
-
-  minimizeWindow: (id: string) => {
+  maximizeWindow: (id) => {
     set((state) => ({
-      windows: state.windows.map((w) => (w.id === id ? { ...w, isMinimized: !w.isMinimized } : w)),
+      windows: state.windows.map((w) => (w.id === id ? { ...w, isMaximized: true, isMinimized: false } : w)),
+      focusedWindowId: id,
     }));
   },
 
-  maximizeWindow: (id: string) => {
+  restoreWindow: (id) => {
     set((state) => ({
-      windows: state.windows.map((w) => (w.id === id ? { ...w, isMaximized: !w.isMaximized } : w)),
+      windows: state.windows.map((w) => (w.id === id ? { ...w, isMaximized: false, isMinimized: false } : w)),
+      focusedWindowId: id,
     }));
   },
 
-  moveWindow: (id: string, x: number, y: number) => {
+  moveWindow: (id, x, y) => {
     set((state) => ({
       windows: state.windows.map((w) => (w.id === id ? { ...w, x, y } : w)),
     }));
   },
 
-  resizeWindow: (id: string, width: number, height: number) => {
+  resizeWindow: (id, width, height) => {
     set((state) => ({
       windows: state.windows.map((w) => (w.id === id ? { ...w, width, height } : w)),
     }));
   },
 
-  getWindowById: (id: string) => {
-    return get().windows.find((w) => w.id === id);
+  updateAppData: (id, data) => {
+    set((state) => ({
+      windows: state.windows.map((w) =>
+        w.id === id ? { ...w, appData: { ...w.appData, ...data } } : w
+      ),
+    }));
   },
+
+  getWindowById: (id) => get().windows.find((w) => w.id === id),
 }));

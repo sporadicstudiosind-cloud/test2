@@ -2,31 +2,34 @@ import { useEffect } from 'react';
 import { Desktop } from '../components/Desktop';
 import { Taskbar } from '../components/Taskbar';
 import { WindowContainer } from '../components/WindowContainer';
+import { NotificationOverlay } from '../components/NotificationOverlay';
+import { ContextMenuOverlay } from '../components/ContextMenuOverlay';
 import { useWindowStore } from '../stores/windowStore';
-import { useRealtimeSync } from '../hooks/useRealtimeSync';
+import { useThemeStore } from '../stores/themeStore';
+import { useAppStore } from '../stores/appStore';
 
 export function DesktopPage() {
   const { windows } = useWindowStore();
-  useRealtimeSync(); // Initialize real-time sync
+  const { loadSettings, applyTheme } = useThemeStore();
+  const { loadInstalledApps } = useAppStore();
 
   useEffect(() => {
-    // Initialize desktop
-  }, []);
+    loadSettings();
+    loadInstalledApps();
+    applyTheme();
+  }, [loadSettings, loadInstalledApps, applyTheme]);
 
   return (
-    <div className="w-screen h-screen bg-blue-600 overflow-hidden flex flex-col">
-      {/* Desktop Area */}
-      <div className="flex-1 relative">
+    <div className="w-screen h-screen overflow-hidden flex flex-col desktop-root">
+      <div className="flex-1 relative overflow-hidden">
         <Desktop />
-
-        {/* Windows */}
-        {windows.map((window) => (
-          <WindowContainer key={window.id} window={window} />
+        {windows.map((win) => (
+          <WindowContainer key={win.id} window={win} />
         ))}
       </div>
-
-      {/* Taskbar */}
       <Taskbar />
+      <NotificationOverlay />
+      <ContextMenuOverlay />
     </div>
   );
 }
