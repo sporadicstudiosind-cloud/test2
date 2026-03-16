@@ -3,12 +3,14 @@ import { Desktop } from '../components/Desktop';
 import { Taskbar } from '../components/Taskbar';
 import { WindowContainer } from '../components/WindowContainer';
 import { useWindowStore } from '../stores/windowStore';
+import { useRealtimeSync } from '../hooks/useRealtimeSync';
 
 export function DesktopPage() {
   const { windows } = useWindowStore();
+  useRealtimeSync(); // Initialize real-time sync
 
   useEffect(() => {
-    // Initialize desktop with some default windows
+    // Initialize desktop
   }, []);
 
   return (
