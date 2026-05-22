@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  username     String   @unique
+  passwordHash String
+  pfpUrl       String?
+  bio          String?
+  cardBgUrl    String?
+  appTheme     String   @default("nexus-dark")
+  points       Int      @default(0)
+  messageCount Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  channelMessages  ChannelMessage[]
+  channelReactions ChannelReaction[]
+  dmReactions      DMReaction[]
+  userAchievements UserAchievement[]
+  inventory        UserInventory[]
+  channelMembers   ChannelMember[]
+  sentDMs          DirectMessage[] @relation("DMSender")
+  receivedDMs      DirectMessage[] @relation("DMReceiver")
+}
+
+model Channel {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  icon        String?
+  bgImageUrl  String?
+  isVoice     Boolean  @default(false)
+  isPrivate   Boolean  @default(false)
+  tags        String   @default("[]")
+  createdAt   DateTime @default(now())
+
+  messages ChannelMessage[]
+  members  ChannelMember[]
+}
+
+model ChannelMember {
+  id        String   @id @default(cuid())
+  userId    String
+  channelId String
+  joinedAt  DateTime @default(now())
+  lastRead  DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, channelId])
+}
+
+model ChannelMessage {
+  id             String    @id @default(cuid())
+  content        String
+  mediaUrl       String?
+  mediaType      String?
+  mediaExpiredAt DateTime?
+  isEdited       Boolean   @default(false)
+  isPinned       Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  userId    String
+  channelId String
+
+  user      User              @relation(fields: [userId], references: [id])
+  channel   Channel           @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  reactions ChannelReaction[]
+
+  @@index([channelId, createdAt])
+}
+
+model ChannelReaction {
+  id        String   @id @default(cuid())
+  emoji     String
+  userId    String
+  messageId String
+  createdAt DateTime @default(now())
+
+  user    User           @relation(fields: [userId], references: [id])
+  message ChannelMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@unique([emoji, userId, messageId])
+}
+
+model DirectMessage {
+  id             String    @id @default(cuid())
+  content        String
+  mediaUrl       String?
+  mediaType      String?
+  mediaExpiredAt DateTime?
+  isRead         Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  senderId   String
+  receiverId String
+
+  sender    User         @relation("DMSender", fields: [senderId], references: [id])
+  receiver  User         @relation("DMReceiver", fields: [receiverId], references: [id])
+  reactions DMReaction[]
+
+  @@index([senderId, receiverId, createdAt])
+}
+
+model DMReaction {
+  id        String   @id @default(cuid())
+  emoji     String
+  userId    String
+  messageId String
+  createdAt DateTime @default(now())
+
+  user    User          @relation(fields: [userId], references: [id])
+  message DirectMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@unique([emoji, userId, messageId])
+}
+
+model Achievement {
+  id             String @id @default(cuid())
+  title          String
+  description    String
+  milestoneCount Int
+  pointReward    Int
+  icon           String @default("🏆")
+
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id])
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+}
+
+model ShopItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  type        String
+  cost        Int
+  assetUrl    String
+  previewUrl  String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  inventory UserInventory[]
+}
+
+model UserInventory {
+  id          String    @id @default(cuid())
+  userId      String
+  shopItemId  String
+  equippedAt  DateTime?
+  purchasedAt DateTime  @default(now())
+
+  user     User     @relation(fields: [userId], references: [id])
+  shopItem ShopItem @relation(fields: [shopItemId], references: [id])
+
+  @@unique([userId, shopItemId])
+}
