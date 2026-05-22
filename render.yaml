@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: nexus-chat
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: .
+    buildCommand: npm run render:build
+    startCommand: npm run render:start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        value: file:./server/prod.db
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 10000
+      - key: MEDIA_EXPIRY_DAYS
+        value: 7

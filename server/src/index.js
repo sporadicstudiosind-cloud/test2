@@ -20,16 +20,20 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: process.env.NODE_ENV === 'production'
+      ? true
+      : (process.env.CLIENT_URL || 'http://localhost:5173'),
     methods: ['GET', 'POST'],
     credentials: true,
   },
   maxHttpBufferSize: 1e7,
 });
 
+const isProd = process.env.NODE_ENV === 'production';
+
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: isProd ? true : (process.env.CLIENT_URL || 'http://localhost:5173'),
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -52,6 +56,16 @@ app.use('/api/search', searchRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
+
+// In production, serve the built React frontend
+if (isProd) {
+  const clientDist = path.join(__dirname, '../../client/dist');
+  app.use(express.static(clientDist));
+  // React router catch-all — must be last
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+}
 
 // Attach io to app for use in routes
 app.set('io', io);
