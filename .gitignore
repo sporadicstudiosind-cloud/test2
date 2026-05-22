@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+.env
+*.db
+*.db-journal
+server/uploads/media/*
+server/uploads/pfp/*
+server/uploads/backgrounds/*
+!server/uploads/media/.gitkeep
+!server/uploads/pfp/.gitkeep
+!server/uploads/backgrounds/.gitkeep
+!server/uploads/shop/.gitkeep
+.DS_Store
+*.log

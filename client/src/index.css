@@ -1,0 +1,231 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Theme Variables ─────────────────────────────── */
+:root, [data-theme="nexus-dark"] {
+  --nexus-bg: #0f0f13;
+  --nexus-surface: #18181f;
+  --nexus-elevated: #222230;
+  --nexus-border: rgba(255,255,255,0.07);
+  --nexus-accent: #7c3aed;
+  --nexus-accent-hover: #6d28d9;
+  --nexus-text: #e8e8f0;
+  --nexus-muted: #8888a0;
+  --nexus-online: #22c55e;
+  --nexus-danger: #ef4444;
+}
+
+[data-theme="cosmic-purple"] {
+  --nexus-bg: #0d0818;
+  --nexus-surface: #160c2a;
+  --nexus-elevated: #1f1240;
+  --nexus-border: rgba(167,139,250,0.1);
+  --nexus-accent: #a855f7;
+  --nexus-accent-hover: #9333ea;
+  --nexus-text: #ede9ff;
+  --nexus-muted: #9d8bc4;
+  --nexus-online: #34d399;
+  --nexus-danger: #f87171;
+}
+
+[data-theme="neon-synthwave"] {
+  --nexus-bg: #0a0014;
+  --nexus-surface: #130024;
+  --nexus-elevated: #1e003a;
+  --nexus-border: rgba(236,72,153,0.15);
+  --nexus-accent: #ec4899;
+  --nexus-accent-hover: #db2777;
+  --nexus-text: #ffe4f5;
+  --nexus-muted: #c084fc;
+  --nexus-online: #4ade80;
+  --nexus-danger: #fb923c;
+}
+
+[data-theme="cherry-blossom"] {
+  --nexus-bg: #1a0a10;
+  --nexus-surface: #271018;
+  --nexus-elevated: #361624;
+  --nexus-border: rgba(244,114,182,0.12);
+  --nexus-accent: #f472b6;
+  --nexus-accent-hover: #ec4899;
+  --nexus-text: #ffe4ef;
+  --nexus-muted: #c4879b;
+  --nexus-online: #86efac;
+  --nexus-danger: #fca5a5;
+}
+
+[data-theme="ocean-depths"] {
+  --nexus-bg: #040c18;
+  --nexus-surface: #071424;
+  --nexus-elevated: #0c2040;
+  --nexus-border: rgba(56,189,248,0.1);
+  --nexus-accent: #0ea5e9;
+  --nexus-accent-hover: #0284c7;
+  --nexus-text: #e0f2fe;
+  --nexus-muted: #7baec4;
+  --nexus-online: #4ade80;
+  --nexus-danger: #f87171;
+}
+
+/* ── Base Styles ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--nexus-bg);
+  color: var(--nexus-text);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ── Scrollbars ──────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--nexus-border); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--nexus-muted); }
+
+/* ── Utilities ───────────────────────────────────── */
+.nexus-glass {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--nexus-border);
+}
+
+.nexus-glow {
+  box-shadow: 0 0 24px rgba(124,58,237,0.25), 0 0 48px rgba(124,58,237,0.1);
+}
+
+.accent-glow {
+  box-shadow: 0 0 12px var(--nexus-accent), 0 0 24px color-mix(in srgb, var(--nexus-accent) 40%, transparent);
+}
+
+.message-bubble {
+  animation: messagePop 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes messagePop {
+  from { transform: translateY(8px) scale(0.97); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* ── Channel tag chips ───────────────────────────── */
+.tag-chip {
+  @apply text-xs px-2 py-0.5 rounded-full font-medium;
+  background: color-mix(in srgb, var(--nexus-accent) 15%, transparent);
+  color: var(--nexus-accent);
+  border: 1px solid color-mix(in srgb, var(--nexus-accent) 30%, transparent);
+}
+
+/* ── Mention highlight ───────────────────────────── */
+.mention {
+  @apply font-semibold cursor-pointer rounded px-0.5;
+  color: var(--nexus-accent);
+  background: color-mix(in srgb, var(--nexus-accent) 12%, transparent);
+}
+.mention:hover { background: color-mix(in srgb, var(--nexus-accent) 22%, transparent); }
+
+/* ── Link preview ────────────────────────────────── */
+.link-preview {
+  border-left: 3px solid var(--nexus-accent);
+}
+
+/* ── Reaction pill ───────────────────────────────── */
+.reaction-pill {
+  @apply flex items-center gap-1 px-2 py-0.5 rounded-full text-sm cursor-pointer select-none transition-all duration-150;
+  background: var(--nexus-elevated);
+  border: 1px solid var(--nexus-border);
+}
+.reaction-pill:hover { border-color: var(--nexus-accent); transform: scale(1.08); }
+.reaction-pill.reacted {
+  background: color-mix(in srgb, var(--nexus-accent) 15%, transparent);
+  border-color: color-mix(in srgb, var(--nexus-accent) 50%, transparent);
+  color: var(--nexus-accent);
+}
+
+/* ── Input ───────────────────────────────────────── */
+.nexus-input {
+  @apply w-full rounded-xl px-4 py-3 outline-none transition-all duration-200;
+  background: var(--nexus-elevated);
+  border: 1px solid var(--nexus-border);
+  color: var(--nexus-text);
+}
+.nexus-input:focus {
+  border-color: var(--nexus-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--nexus-accent) 15%, transparent);
+}
+.nexus-input::placeholder { color: var(--nexus-muted); }
+
+/* ── Button ──────────────────────────────────────── */
+.nexus-btn {
+  @apply px-4 py-2 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer select-none;
+  background: var(--nexus-accent);
+  color: white;
+}
+.nexus-btn:hover { background: var(--nexus-accent-hover); transform: translateY(-1px); box-shadow: 0 4px 12px color-mix(in srgb, var(--nexus-accent) 40%, transparent); }
+.nexus-btn:active { transform: translateY(0); }
+.nexus-btn-ghost {
+  @apply px-4 py-2 rounded-xl font-medium text-sm transition-all duration-200 cursor-pointer;
+  background: transparent;
+  color: var(--nexus-muted);
+  border: 1px solid var(--nexus-border);
+}
+.nexus-btn-ghost:hover { color: var(--nexus-text); background: var(--nexus-elevated); }
+
+/* ── Typing dots ─────────────────────────────────── */
+.typing-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--nexus-muted);
+  animation: typingBounce 1.4s infinite ease-in-out;
+}
+.typing-dot:nth-child(1) { animation-delay: 0s; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+/* ── Sidebar active item ─────────────────────────── */
+.sidebar-item-active {
+  background: color-mix(in srgb, var(--nexus-accent) 15%, transparent);
+  color: var(--nexus-text);
+}
+.sidebar-item-active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%; bottom: 20%;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--nexus-accent);
+}
+
+/* ── Online indicator pulse ──────────────────────── */
+.online-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: var(--nexus-online);
+  animation: onlinePulse 2.5s infinite;
+  opacity: 0;
+}
+@keyframes onlinePulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* ── Unread badge ────────────────────────────────── */
+.unread-badge {
+  @apply absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold;
+  background: var(--nexus-danger);
+  color: white;
+  padding: 0 4px;
+}
