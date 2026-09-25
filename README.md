@@ -36,6 +36,12 @@ exploit. See the reality check for the reasoning.
 
 > Priority: **remove Gabb's limits** on a phone you own outright. Custom OS = icing.
 > Brick risk accepted; you want to learn.
+>
+> Narrowed further to: **Play Store + unlocked Settings + ability to install APKs.**
+> The APK installer currently refuses everything because a Device Owner (Gabb's Knox
+> MDM) is vetoing installs by policy. Start at **[`docs/06-JUST-PLAYSTORE-AND-APKS.md`](docs/06-JUST-PLAYSTORE-AND-APKS.md)** —
+> it runs the cheap ADB fix first and only sends you to the reflash if a Device Owner
+> forces it.
 
 Good news / bad news:
 
@@ -75,10 +81,13 @@ unless you pass an explicit `--flash` flag after reading what it will do.
 | `docs/03-KNOX-KME-caveat.md` | The auto-re-enrollment trap + official release route. |
 | `docs/04-custom-os-IF-unlockable.md` | Bonus path, only if OEM unlock exists. |
 | `docs/05-GLOSSARY.md` | KG state, RMM, KME, GSI, Knox, VaultKeeper, etc. |
-| `scripts/00-check-prereqs.sh` | Verifies/【explains how to install】 host tools. |
+| `docs/06-JUST-PLAYSTORE-AND-APKS.md` | **Narrowed goal**: Play Store + Settings + sideload; cheap ADB fix first. |
+| `scripts/00-check-prereqs.sh` | Verifies/explains how to install host tools. |
 | `scripts/01-detect.sh` | ADB device fingerprint + unlockability verdict. |
 | `scripts/02-download-firmware.sh` | Guided stock-firmware download (samfirm.js / samloader). |
 | `scripts/03-flash-stock.sh` | Heimdall reflash wrapper. Dry-run unless `--flash`. |
+| `scripts/04-management-state.sh` | Read-only probe: Device Owner? which restrictions block installs? |
+| `scripts/05-try-sideload.sh` | Non-destructive attempt to restore APK installs over ADB. |
 | `scripts/lib.sh` | Shared helpers. |
 
 ## Legal / safety
